@@ -4,13 +4,17 @@ var request = require('request');
 var fs = require('fs');
 var dotenv = require('dotenv').config()
 
-console.log(process.env.GITHUB_TOKEN.toString());
+if (!fs.existsSync("./.env")) throw "missing .env file"
 
+
+
+
+if (process.argv.length !== 4) {
+  throw "Program requires Owner and Name arguments, and these only";
+}
 var repoOwner = process.argv[2];
 var repoName = process.argv[3];
-if (!repoOwner || !repoName) {
-  throw "Program requires Owner and Name arguments";
-}
+
 
 console.log('Welcome to the GitHub Avatar Downloader!');
 
@@ -19,10 +23,10 @@ function getRepoContributors(repoOwner, repoName, cb) {
 
   var GITHUB_USER = "srveale";
   var GITHUB_TOKEN = process.env.GITHUB_TOKEN.toString();
+  if (!GITHUB_TOKEN) throw "Missing Github token";
 
 
   var requestURL = 'https://' + GITHUB_USER + ':' + GITHUB_TOKEN + '@api.github.com/repos/' + repoOwner + '/' + repoName + '/contributors';
-  console.log(requestURL);
   var options = {
     url: requestURL,
     headers: {
@@ -37,12 +41,13 @@ function getRepoContributors(repoOwner, repoName, cb) {
          })
 
          .on('end', function(){
-           console.log('Finished downloading');
+           console.log('Response received');
          });
 }
 
 function downloadImageByURL(url, filePath) {
   // Downloads image at URL and saves it to given path
+
 
   request.get(url)
 
@@ -54,19 +59,28 @@ function downloadImageByURL(url, filePath) {
          console.log('Downloading File');
        })
 
-       .pipe(fs.createWriteStream(filePath));
+      .pipe(fs.createWriteStream(filePath));
+
+
 }
 
 getRepoContributors(repoOwner, repoName, function(err, result) {
 
-
   console.log("Errors:", err);
+
+  if (JSON.parse(result.body).message == "Not Found") {
+    throw "Repo or Owner not found";
+  }
+
+
+  if (!fs.existsSync("./avatars")){
+    fs.mkdirSync("./avatars");
+  }
 
   JSON.parse(result.body).forEach(function (user) {
 
     var filePath = './avatars/' + user.login + '.jpg';
     downloadImageByURL(user.avatar_url, filePath);
-
   });
 });
 
