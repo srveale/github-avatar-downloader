@@ -1,5 +1,5 @@
 var request = require('request');
-var fs = require('fs')
+var fs = require('fs');
 
 
 var repoOwner = process.argv[2];
@@ -16,13 +16,13 @@ function getRepoContributors(repoOwner, repoName, cb) {
   var GITHUB_USER = "srveale";
   var GITHUB_TOKEN = "9b380e4abffc7bdc5b10debcd0e0484a7c3c2719";
 
-  var requestURL = 'https://'+ GITHUB_USER + ':' + GITHUB_TOKEN + '@api.github.com/repos/' + repoOwner + '/' + repoName + '/contributors';
+  var requestURL = 'https://' + GITHUB_USER + ':' + GITHUB_TOKEN + '@api.github.com/repos/' + repoOwner + '/' + repoName + '/contributors';
   var options = {
     url: requestURL,
     headers: {
       'User-Agent': 'srveale'
     }
-  }
+  };
 
   request.get(options, cb)
 
@@ -30,13 +30,9 @@ function getRepoContributors(repoOwner, repoName, cb) {
            throw err;
          })
 
-         .on('response', function (response) {
-         })
-
          .on('end', function(){
-          console.log('Finished downloading');
+           console.log('Finished downloading');
          });
-  return
 }
 
 function downloadImageByURL(url, filePath) {
@@ -62,7 +58,7 @@ getRepoContributors(repoOwner, repoName, function(err, result) {
     var filePath = './avatars/' + user.login + '.jpg';
     downloadImageByURL(user.avatar_url, filePath);
 
-  })
+  });
 });
 
 
