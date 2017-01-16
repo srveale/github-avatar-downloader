@@ -1,3 +1,5 @@
+// Gets all avatars of contributors to a GitHub repository
+
 var request = require('request');
 var fs = require('fs');
 
@@ -36,6 +38,8 @@ function getRepoContributors(repoOwner, repoName, cb) {
 }
 
 function downloadImageByURL(url, filePath) {
+  // Downloads image at URL and saves it to given path
+
   request.get(url)
 
        .on('error', function (err) {
@@ -50,6 +54,7 @@ function downloadImageByURL(url, filePath) {
 }
 
 getRepoContributors(repoOwner, repoName, function(err, result) {
+
 
   console.log("Errors:", err);
 
